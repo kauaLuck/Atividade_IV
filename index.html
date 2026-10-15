@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação do Banco de Dados — DriveEasy</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>DriveEasy — Locadora de Automóveis</h1>
+        <p>Documentação Técnica do Banco de Dados Relacional (SGBD MySQL)</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#contexto">Contexto</a></li>
+            <li><a href="#modelagem">Estrutura de Tabelas</a></li>
+            <li><a href="#formas-normais">Formas Normais</a></li>
+            <li><a href="#consultas">Consultas SQL</a></li>
+            <li><a href="#infraestrutura">Hosting & Dump</a></li>
+        </ul>
+    </nav>
+
+    <main>
+
+        <!-- SEÇÃO 1: CONTEXTO E PROBLEMA -->
+        <section id="contexto">
+            <h2>1. Contextualização do Projeto</h2>
+            <p>A <strong>DriveEasy</strong> é uma empresa de locação de veículos que atende clientes corporativos e
+                individuais. O projeto consiste na implementação de um SGBD Relacional MySQL para solucionar falhas
+                operacionais decorrentes da ausência de um sistema centralizado.</p>
+
+            <h3>Problemas Eliminados com a Solução Relacional:</h3>
+            <ul>
+                <li><strong>Overbooking de Veículos:</strong> Impedimento de reservas simultâneas para o mesmo veículo
+                    no mesmo período através de restrições de chave e validações temporais.</li>
+                <li><strong>Inconsistência na Gestão de Multas:</strong> Associação direta e rastreável da infração ao
+                    cliente exato que conduzia o veículo no horário do evento.</li>
+                <li><strong>Falha no Histórico de Manutenção:</strong> Registro centralizado das intervenções
+                    preventivas e corretivas da frota.</li>
+                <li><strong>Redundância de Dados:</strong> Aplicação de regras de normalização para eliminação de
+                    duplicidades cadastrais.</li>
+            </ul>
+        </section>
+
+        <!-- SEÇÃO 2: MODELAGEM DAS TABELAS -->
+        <section id="modelagem">
+            <h2>2. Estrutura do Banco de Dados (`sistema_aluguel_veiculos`)</h2>
+            <p>O esquema relacional é composto por tabelas centrais vinculadas por chaves estrangeiras com regras de
+                integridade referencial <span class="badge">ON DELETE RESTRICT</span> e <span class="badge">ON UPDATE
+                    CASCADE</span>.</p>
+
+            <h3>Tabela: `categorias`</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Tipo</th>
+                            <th>Restrições</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id_categoria</code></td>
+                            <td>INT</td>
+                            <td>PRIMARY KEY, AUTO_INCREMENT</td>
+                            <td>Identificador único da categoria</td>
+                        </tr>
+                        <tr>
+                            <td><code>nome_categoria</code></td>
+                            <td>VARCHAR(100)</td>
+                            <td>NOT NULL, UNIQUE</td>
+                            <td>Nome da categoria (ex: SUV, Econômico)</td>
+                        </tr>
+                        <tr>
+                            <td><code>descricao</code></td>
+                            <td>VARCHAR(200)</td>
+                            <td>NOT NULL</td>
+                            <td>Descrição das características</td>
+                        </tr>
+                        <tr>
+                            <td><code>valor_diaria</code></td>
+                            <td>DECIMAL(10,2)</td>
+                            <td>NOT NULL, CHECK (valor_diaria > 0)</td>
+                            <td>Custo diário de locação</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Tabela: `clientes`</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Tipo</th>
+                            <th>Restrições</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id_cliente</code></td>
+                            <td>INT</td>
+                            <td>PRIMARY KEY, AUTO_INCREMENT</td>
+                            <td>Identificador único do cliente</td>
+                        </tr>
+                        <tr>
+                            <td><code>nome_cliente</code></td>
+                            <td>VARCHAR(100)</td>
+                            <td>NOT NULL</td>
+                            <td>Nome completo</td>
+                        </tr>
+                        <tr>
+                            <td><code>cpf</code></td>
+                            <td>CHAR(11)</td>
+                            <td>NOT NULL, UNIQUE</td>
+                            <td>Cadastro de Pessoa Física</td>
+                        </tr>
+                        <tr>
+                            <td><code>cnh</code></td>
+                            <td>VARCHAR(20)</td>
+                            <td>NOT NULL, UNIQUE</td>
+                            <td>Carteira Nacional de Habilitação</td>
+                        </tr>
+                        <tr>
+                            <td><code>email</code></td>
+                            <td>VARCHAR(100)</td>
+                            <td>NOT NULL, UNIQUE</td>
+                            <td>Endereço de e-mail do cliente</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Tabela: `veiculos`</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Tipo</th>
+                            <th>Restrições</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id_veiculo</code></td>
+                            <td>INT</td>
+                            <td>PRIMARY KEY, AUTO_INCREMENT</td>
+                            <td>Identificador único do veículo</td>
+                        </tr>
+                        <tr>
+                            <td><code>placa</code></td>
+                            <td>VARCHAR(8)</td>
+                            <td>NOT NULL, UNIQUE</td>
+                            <td>Placa de identificação do veículo</td>
+                        </tr>
+                        <tr>
+                            <td><code>status</code></td>
+                            <td>ENUM</td>
+                            <td>'disponivel', 'locado', 'manutencao', 'inativo'</td>
+                            <td>Situação operacional atual</td>
+                        </tr>
+                        <tr>
+                            <td><code>id_categoria</code></td>
+                            <td>INT</td>
+                            <td>FOREIGN KEY -> categorias(id_categoria)</td>
+                            <td>Vínculo com a categoria do veículo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Tabela: `locacao`</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campo</th>
+                            <th>Tipo</th>
+                            <th>Restrições</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>id_locacao</code></td>
+                            <td>INT</td>
+                            <td>PRIMARY KEY, AUTO_INCREMENT</td>
+                            <td>Identificador único do contrato</td>
+                        </tr>
+                        <tr>
+                            <td><code>id_cliente</code></td>
+                            <td>INT</td>
+                            <td>FOREIGN KEY -> clientes(id_cliente)</td>
+                            <td>Cliente responsável pelo contrato</td>
+                        </tr>
+                        <tr>
+                            <td><code>id_veiculo</code></td>
+                            <td>INT</td>
+                            <td>FOREIGN KEY -> veiculos(id_veiculo)</td>
+                            <td>Veículo locado</td>
+                        </tr>
+                        <tr>
+                            <td><code>data_retirada</code></td>
+                            <td>DATETIME</td>
+                            <td>NOT NULL</td>
+                            <td>Data e hora da retirada</td>
+                        </tr>
+                        <tr>
+                            <td><code>data_prevista_devolucao</code></td>
+                            <td>DATETIME</td>
+                            <td>NOT NULL, CHECK (>= data_retirada)</td>
+                            <td>Previsão de devolução do automóvel</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: FORMAS NORMAIS -->
+        <section id="formas-normais">
+            <h2>3. Aplicação das Formas Normais</h2>
+            <article>
+                <h3>1ª Forma Normal (1FN) — Atomicidade</h3>
+                <p>Todos os atributos armazenam valores atômicos. O endereço dos clientes foi desmembrado em colunas
+                    individuais (<code>logradouro</code>, <code>numero</code>, <code>bairro</code>, <code>cidade</code>,
+                    <code>estado</code>, <code>cep</code>), eliminando campos compostos.</p>
+            </article>
+
+            <article>
+                <h3>2ª Forma Normal (2FN) — Dependência Total da Chave</h3>
+                <p>Todas as tabelas utilizam Chaves Primárias simples (surrogadas com `AUTO_INCREMENT`). Como não há
+                    chaves primárias compostas, garante-se que todos os atributos não-chave dependam integralmente da
+                    PK.</p>
+            </article>
+
+            <article>
+                <h3>3ª Forma Normal (3FN) — Eliminação de Dependências Transitivas</h3>
+                <p>Atributos como <code>valor_diaria</code> e <code>descricao</code> pertencem estritamente à entidade
+                    <code>categorias</code>. A tabela de veículos armazena apenas a referência
+                    <code>id_categoria</code>, evitando redundâncias caso o valor da diária seja alterado.</p>
+            </article>
+
+            <article>
+                <h3>4ª Forma Normal (4FN) — Dependências Multivaloradas Independentes</h3>
+                <p>Opcionais do veículo e permissões de circulação regional foram isolados em tabelas associativas
+                    próprias para evitar redundância na entidade principal do veículo.</p>
+            </article>
+        </section>
+
+        <!-- SEÇÃO 4: CONSULTAS SQL -->
+        <section id="consultas">
+            <h2>4. Consultas SQL Analíticas (Exemplos)</h2>
+            <p>Abaixo estão destacadas duas das 15 consultas desenvolvidas para apoio à tomada de decisão executiva:</p>
+
+            <h3>Consulta 1: Faturamento Total por Categoria de Veículo</h3>
+            <pre><code>SELECT 
+    cat.nome_categoria,
+    COUNT(l.id_locacao) AS total_locacoes,
+    SUM(l.valor_total) AS faturamento_total
+FROM locacao l
+INNER JOIN veiculos v ON l.id_veiculo = v.id_veiculo
+INNER JOIN categorias cat ON v.id_categoria = cat.id_categoria
+WHERE l.status = 'concluida'
+GROUP BY cat.nome_categoria
+ORDER BY faturamento_total DESC;</code></pre>
+
+            <h3>Consulta 2: Listagem de Locações Ativas com Dados do Cliente e Veículo</h3>
+            <pre><code>SELECT 
+    l.id_locacao,
+    c.nome_cliente,
+    v.modelo,
+    v.placa,
+    l.data_retirada,
+    l.data_prevista_devolucao
+FROM locacao l
+INNER JOIN clientes c ON l.id_cliente = c.id_cliente
+INNER JOIN veiculos v ON l.id_veiculo = v.id_veiculo
+WHERE l.status = 'ativa'
+ORDER BY l.data_retirada DESC;</code></pre>
+        </section>
+
+        <!-- SEÇÃO 5: INFRAESTRUTURA -->
+        <section id="infraestrutura">
+            <h2>5. Infraestrutura, Hosting e Backup</h2>
+            <ul>
+                <li><strong>SGBD Utilizado:</strong> MySQL 8.0 / Engine InnoDB (Suporte completo a transações e chaves
+                    estrangeiras).</li>
+                <li><strong>Hospedagem na Nuvem:</strong> Serviço Cloud MySQL gerenciado via plataforma
+                    <strong>Aiven</strong>.</li>
+                <li><strong>Backup do Banco:</strong> Arquivo `.sql` gerado via `mysqldump` contendo a estrutura DDL e
+                    as inserções DML.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>DriveEasy — Documentação Técnica do Banco de Dados | Atividade IV - BCD</p>
+    </footer>
+
+</body>
+
+</html>
