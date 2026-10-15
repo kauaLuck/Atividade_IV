@@ -1,0 +1,185 @@
+:root {
+    --primary-purple: #6C5CE7;
+    --dark-purple: #4834D4;
+    --secondary-blue: #2563EB;
+    --light-blue: #E0E7FF;
+    --bg-light: #F8FAFC;
+    --card-bg: #FFFFFF;
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+    --border-color: #E2E8F0;
+    --code-bg: #0F172A;
+    --code-text: #38BDF8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* Header & Navegação */
+header {
+    background: linear-gradient(135deg, var(--dark-purple), var(--secondary-blue));
+    color: #FFFFFF;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+nav {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+nav a {
+    display: block;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+nav a:hover {
+    color: var(--primary-purple);
+    background-color: var(--light-blue);
+}
+
+/* Layout Principal */
+main {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+section {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border-left: 5px solid var(--primary-purple);
+}
+
+h2 {
+    color: var(--dark-purple);
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--light-blue);
+    padding-bottom: 0.4rem;
+}
+
+h3 {
+    color: var(--secondary-blue);
+    margin: 1.2rem 0 0.6rem 0;
+}
+
+p, li {
+    color: var(--text-main);
+    margin-bottom: 0.8rem;
+}
+
+ul, ol {
+    margin-left: 1.5rem;
+}
+
+/* Tabelas Dicionário de Dados */
+.table-responsive {
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+th, td {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--light-blue);
+    color: var(--dark-purple);
+    font-weight: 700;
+}
+
+tr:nth-child(even) {
+    background-color: #F1F5F9;
+}
+
+/* Código SQL */
+pre {
+    background-color: var(--code-bg);
+    color: var(--code-text);
+    padding: 1.2rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 0.9rem;
+    margin: 1rem 0;
+}
+
+code {
+    font-family: 'Consolas', 'Courier New', Courier, monospace;
+}
+
+/* Badges e Destaques */
+.badge {
+    display: inline-block;
+    background-color: var(--primary-purple);
+    color: #FFFFFF;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        text-align: center;
+    }
+    section {
+        padding: 1.2rem;
+    }
+}
